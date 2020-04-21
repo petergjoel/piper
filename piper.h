@@ -4,7 +4,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <cstring>
-
+#include <iostream>
+#include <cstdarg>
 
 class piper {
 protected:
@@ -28,7 +29,7 @@ public:
     {
     }
 
-    bool run(const char* path, const char* cmd)
+    bool run(const char* path, const char* cmd, const char* file, const char* arg)
     {
         pid_t pid = fork();
         if (pid == (pid_t) 0)
@@ -38,9 +39,8 @@ public:
             dup2(_in[0], STDIN_FILENO);
             dup2(_out[1], STDOUT_FILENO);
             dup2(_out[1], STDERR_FILENO);
-            execl(path, cmd, NULL);
-            return true;
-
+            execl(path, cmd, file, arg);
+            exit(0);
         }
         else if (pid < (pid_t) 0)
         {

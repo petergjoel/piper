@@ -1,23 +1,15 @@
 #include <iostream>
+#include <stdlib.h>
 #include "piper.h"
 
 int main() {
+
+    chdir("/home/petko/Devel/wcet_uppaal/stepSimulator");
     piper p;
 
-    if(!p.run("/bin/gdb", "gdb"))
+    if(!p.run("/bin/scala", "scala", "/home/petko/Devel/wcet_uppaal/stepSimulator/stepSimulator.scala", "r0=0"))
     {
-        p.readchunk(std::cout, 1000);
-
-        std::cout << "SENDING " << std::endl;
-        p.send("p 10+10\n");
         p.readline(std::cout);
-        p.send("help\n");
-        p.readchunk(std::cout, 1000);
-
-        std::string tmp;
-        std::cin >> tmp;
-
-        p.send("quit\n");
         std::cout << "DONE MAIN" << std::endl;
     }
 
