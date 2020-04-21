@@ -4,11 +4,11 @@
 
 int main() {
 
-    chdir("/home/petko/Devel/wcet_uppaal/stepSimulator");
     piper p;
 
-    if(!p.run("/bin/scala", "scala", "/home/petko/Devel/wcet_uppaal/stepSimulator/stepSimulator.scala", "r0=0"))
+    if(!p.run("/bin/python3", "python3", "test.py", nullptr))
     {
+        p.send("hello python\n");
         p.readline(std::cout);
         std::cout << "DONE MAIN" << std::endl;
     }

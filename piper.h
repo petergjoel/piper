@@ -57,6 +57,7 @@ public:
     void send(const char* cmd)
     {
         write(_in[1], cmd, strlen(cmd));
+        fsync(_in[1]);
     }
 
     bool readchar(std::ostream& ss)
