@@ -6,11 +6,17 @@
 #include <cstring>
 #include <iostream>
 #include <cstdarg>
+#include <vector>
+#include <signal.h>
+#include <thread>
+#include <chrono>
+#include <sys/wait.h>
 
 class piper {
 protected:
     int _in[2];
     int _out[2];
+    pid_t _pid;
 public:
     piper()
     {
@@ -29,20 +35,22 @@ public:
     {
     }
 
-    bool run(const char* path, const char* cmd, const char* file, const char* arg)
+    bool run(const char* cmd, const std::vector<const char*> args)
     {
-        pid_t pid = fork();
-        if (pid == (pid_t) 0)
+        if(args.size() < 1) return false;
+        if(args.back() != nullptr) return false;
+        _pid = fork();
+        if (_pid == (pid_t) 0)
         {
             close(_in[1]);
             close(_out[0]);
             dup2(_in[0], STDIN_FILENO);
             dup2(_out[1], STDOUT_FILENO);
             dup2(_out[1], STDERR_FILENO);
-            execl(path, cmd, file, arg);
+            execv(cmd, (char* const*)args.data());
             exit(0);
         }
-        else if (pid < (pid_t) 0)
+        else if (_pid < (pid_t) 0)
         {
            std::cerr << "Fork failed" << std::endl;
         }
@@ -53,7 +61,27 @@ public:
         }
         return false;
     }
-
+ 
+    void block(size_t ms = 100) const {
+        
+        int status = 0;
+        while (wait(&status) != _pid);
+    }
+    
+    void block(std::ostream& ss, size_t ms = 100)
+    {
+        block(ms);
+        const auto MX = 1024;
+        char c[MX+1];
+        do {
+            auto r = read(_out[0], c, 1024);
+            if(r <= 0) return;
+            c[r] = '\0';
+            ss << c;
+            if(r < MX) return;
+        } while(true);
+    }
+    
     void send(const char* cmd)
     {
         write(_in[1], cmd, strlen(cmd));
