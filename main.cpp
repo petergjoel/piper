@@ -7,7 +7,7 @@ int main() {
 
     {
         piper p;
-        if (!p.run("/bin/python3",{"python3", "test.py", nullptr})) {
+        if (!p.run("/bin/python3",{"python3", "test.py"})) {
             p.send("hello python\n");
             p.readline(std::cout);
             std::cout << "DONE MAIN" << std::endl;
@@ -15,10 +15,10 @@ int main() {
     }
     {
         piper p;
-        if (!p.run("/home/pgj/.local/bin/verifyta",{"verifyta", "-s", "./no_rate.xml", nullptr})) {
+        std::vector<const char*> args{"verifyta", "-s", "-f", "1000", "./no_rate.xml"};
+        if (!p.run("/home/pgj/.local/bin/verifyta",args)) {
             std::stringstream ss;
-            p.readline(ss);
-            p.block(ss, 100);
+            p.block(ss);
             std::cerr << "DONE VERIFYTA" << std::endl;
             std::cerr << ss.str() << std::endl;
         } else std::cerr << "ERROR" << std::endl;

@@ -35,10 +35,10 @@ public:
     {
     }
 
-    bool run(const char* cmd, const std::vector<const char*> args)
+    bool run(const char* cmd, std::vector<const char*> args)
     {
         if(args.size() < 1) return false;
-        if(args.back() != nullptr) return false;
+        args.push_back(nullptr);
         _pid = fork();
         if (_pid == (pid_t) 0)
         {
